@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	</head>
+
+<body>
+	<p>Image:</p>
+	<input id="image" type="file" />
+	<button id="upload">upload</button>
+
+	<br>
+	<br>
+
+	<p>Audio:</p>
+	<input id="audio" type="file" />
+	<button id="upload2">upload audio</button>
+
+<script>
+	// Image Recognition API
+
+	const uploadButton = document.querySelector('#upload');
+
+	uploadButton.addEventListener('click', () => {
+		const input = document.querySelector('#image');
+		const file = input.files[0];
+
+		const fileReader = new FileReader();
+		const newfile = fileReader.readAsDataURL(file);
+
+		fileReader.addEventListener('load', (newfile) => {
+			baseFile = newfile.srcElement.result.slice(23);
+			var b=JSON.stringify({"requests":[{  "image":{
+				"content":baseFile
+			}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
+			
+			var e=new XMLHttpRequest;
+
+			e.onload=function(){console.log(e.responseText)};
+			e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
+			e.send(b)
+
+		})
+	})
+
+	// Voice Recognition API
+
+	const uploadButton2 = document.querySelector('#upload2');
+
+	uploadButton2.addEventListener('click', () => {
+			const input = document.querySelector('#audio');
+			const fileName = input.files[0];
+	
+			const fileReader = new FileReader();
+			const audioFile = fileReader.readAsDataURL(fileName);
+
+			fileReader.addEventListener('load', (audioFile) => {
+				baseFile = newfile.srcElement.result.slice(23);
+				var b=JSON.stringify({"requests":[{  "image":{
+					"content": baseFile
+				}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
+				
+				var e=new XMLHttpRequest;
+
+				e.onload=function(){console.log(e.responseText)};
+				e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
+				e.send(b)
+
+			})
+		})
+
+	
+</script>
+
+</body>
+</html>
