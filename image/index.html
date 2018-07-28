@@ -33,40 +33,115 @@
 				"content":baseFile
 			}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
 			
-			var e=new XMLHttpRequest;
+			var e = new XMLHttpRequest;
 
-			e.onload=function(){console.log(e.responseText)};
 			e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
 			e.send(b)
+
+				e.onload=function(){
+				const path = JSON.parse(e.responseText);
+				const newPath = path.responses[0].faceAnnotations[0].landmarks;
+
+				console.log(newPath)
+
+				const LEFT_EYE_TOP_BOUNDARY = newPath[16].position;
+				const LEFT_EYE_BOTTOM_BOUNDARY = newPath[18].position;
+				const LEFT_EYE_PUPIL = newPath[20].position;
+				const RIGHT_EYE_TOP_BOUNDARY = newPath[21].position;
+				const RIGHT_EYE_BOTTOM_BOUNDARY = newPath[23].position;
+				const RIGHT_EYE_PUPIL = newPath[25].position;
+				const LEFT_EYEBROW_UPPER_MIDPOINT = newPath[26].position;
+				const RIGHT_EYEBROW_UPPER_MIDPOINT = newPath[27].position;
+
+				let pointsForClosed = 0
+				let pointsForOpen = 0
+
+				// RIGHT EYE
+
+				if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseInt(RIGHT_EYE_PUPIL.y)) <= 20){
+					console.log(1)
+					pointsForClosed += 1
+				}else{
+					if(Math.abs(parseInt(RIGHT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(RIGHT_EYE_TOP_BOUNDARY.y)-parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y))){
+						pointsForClosed += 1
+					}else{
+						pointsForOpen += 1
+					}
+				}
+
+				if (Math.abs(parseInt(RIGHT_EYE_PUPIL.y) - parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 20){
+										console.log(2)
+
+					pointsForClosed += 1
+				}else{
+					pointsForOpen += 1
+				}
+
+				if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y)- parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 25){
+										console.log(3)
+
+					pointsForClosed += 1
+				}else{
+					pointsForOpen += 1
+				}
+
+
+				// LEFT EYE
+
+				if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_PUPIL.y)) <= 20){
+					pointsForClosed += 1
+				}else{
+					pointsForOpen += 1
+				}
+
+				if (Math.abs(parseInt(LEFT_EYE_PUPIL.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 20){
+					pointsForClosed += 1
+				}else{
+					pointsForOpen += 1
+				}
+
+				if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 25){
+					pointsForClosed += 1
+				}else{
+					pointsForOpen += 1
+				}
+
+				if(pointsForOpen >= pointsForClosed){
+					console.log('Eyes are open')
+				}else{
+					console.log('Eyes are closed')
+				}
+
+			};
 
 		})
 	})
 
 	// Voice Recognition API
 
-	const uploadButton2 = document.querySelector('#upload2');
+	// const uploadButton2 = document.querySelector('#upload2');
 
-	uploadButton2.addEventListener('click', () => {
-			const input = document.querySelector('#audio');
-			const fileName = input.files[0];
+	// uploadButton2.addEventListener('click', () => {
+	// 		const input = document.querySelector('#audio');
+	// 		const fileName = input.files[0];
 	
-			const fileReader = new FileReader();
-			const audioFile = fileReader.readAsDataURL(fileName);
+	// 		const fileReader = new FileReader();
+	// 		const audioFile = fileReader.readAsDataURL(fileName);
 
-			fileReader.addEventListener('load', (audioFile) => {
-				baseFile = newfile.srcElement.result.slice(23);
-				var b=JSON.stringify({"requests":[{  "image":{
-					"content": baseFile
-				}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
+	// 		fileReader.addEventListener('load', (audioFile) => {
+	// 			baseFile = newfile.srcElement.result.slice(23);
+	// 			var b=JSON.stringify({"requests":[{  "image":{
+	// 				"content": baseFile
+	// 			}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
 				
-				var e=new XMLHttpRequest;
+	// 			var e=new XMLHttpRequest;
 
-				e.onload=function(){console.log(e.responseText)};
-				e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
-				e.send(b)
+	// 			e.onload=function(){console.log(e.responseText)};
+	// 			e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
+	// 			e.send(b)
 
-			})
-		})
+	// 		})
+	// 	})
 
 	
 </script>
