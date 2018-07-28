@@ -11,6 +11,10 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
         video.src = window.URL.createObjectURL(stream);
         video.play();
+        for(var i in video){
+          console.log(video[i]);
+
+        }
     });
 }
 
@@ -19,12 +23,15 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 var video = document.getElementById('video');
-var sendthis = btoa(video.src);
+
+var canvas = document.getElementById('canvas');
+var dataURL = canvas.toDataURL();
+console.log(dataURL);
+
+
 // Trigger photo take
 document.getElementById("snap").addEventListener("click", function() {
 	context.drawImage(video, 0, 0, 640, 480);
-  console.log(sendthis);
-
 });
 
 
