@@ -1,150 +1,172 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-	</head>
 
-<body>
-	<p>Image:</p>
-	<input id="image" type="file" />
-	<button id="upload">upload</button>
+<video id="video" width="640" height="480" autoplay></video>
+<button id="snap">Snap Photo</button>
+<canvas id="canvas" width="640" height="480"></canvas>
 
-	<br>
-	<br>
+<!-- <p>Image:</p>
+  <input id="image" type="file" />
+  <button id="upload">upload</button>
 
-	<p>Audio:</p>
-	<input id="audio" type="file" />
-	<button id="upload2">upload audio</button>
+  <br>
+  <br>
+
+  <p>Audio:</p>
+  <input id="audio" type="file" />
+  <button id="upload2">upload audio</button> -->
+
 
 <script>
-	// Image Recognition API
+var video = document.getElementById('video');
 
-	const uploadButton = document.querySelector('#upload');
-
-	uploadButton.addEventListener('click', () => {
-		const input = document.querySelector('#image');
-		const file = input.files[0];
-
-		const fileReader = new FileReader();
-		const newfile = fileReader.readAsDataURL(file);
-
-		fileReader.addEventListener('load', (newfile) => {
-			baseFile = newfile.srcElement.result.slice(23);
-			var b=JSON.stringify({"requests":[{  "image":{
-				"content":baseFile
-			}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
-			
-			var e = new XMLHttpRequest;
-
-			e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
-			e.send(b)
-
-				e.onload=function(){
-				const path = JSON.parse(e.responseText);
-				const newPath = path.responses[0].faceAnnotations[0].landmarks;
-
-				console.log(newPath)
-
-				const LEFT_EYE_TOP_BOUNDARY = newPath[16].position;
-				const LEFT_EYE_BOTTOM_BOUNDARY = newPath[18].position;
-				const LEFT_EYE_PUPIL = newPath[20].position;
-				const RIGHT_EYE_TOP_BOUNDARY = newPath[21].position;
-				const RIGHT_EYE_BOTTOM_BOUNDARY = newPath[23].position;
-				const RIGHT_EYE_PUPIL = newPath[25].position;
-				const LEFT_EYEBROW_UPPER_MIDPOINT = newPath[26].position;
-				const RIGHT_EYEBROW_UPPER_MIDPOINT = newPath[27].position;
-
-				let pointsForClosed = 0
-				let pointsForOpen = 0
-
-				// RIGHT EYE
-
-				if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseInt(RIGHT_EYE_PUPIL.y)) <= 20){
-					console.log(1)
-					pointsForClosed += 1
-				}else{
-					if(Math.abs(parseInt(RIGHT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(RIGHT_EYE_TOP_BOUNDARY.y)-parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y))){
-						pointsForClosed += 1
-					}else{
-						pointsForOpen += 1
-					}
-				}
-
-				if (Math.abs(parseInt(RIGHT_EYE_PUPIL.y) - parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 20){
-										console.log(2)
-
-					pointsForClosed += 1
-				}else{
-					pointsForOpen += 1
-				}
-
-				if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y)- parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 25){
-										console.log(3)
-
-					pointsForClosed += 1
-				}else{
-					pointsForOpen += 1
-				}
+if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Not adding `{ audio: true }` since we only want video now
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+        video.src = window.URL.createObjectURL(stream);
+        // video.play();
+    });
+}
 
 
-				// LEFT EYE
+// Elements for taking the snapshot
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+var video = document.getElementById('video');
 
-				if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_PUPIL.y)) <= 20){
-					pointsForClosed += 1
-				}else{
-					pointsForOpen += 1
-				}
+var canvas = document.getElementById('canvas');
+var dataURL = canvas.toDataURL();
 
-				if (Math.abs(parseInt(LEFT_EYE_PUPIL.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 20){
-					pointsForClosed += 1
-				}else{
-					pointsForOpen += 1
-				}
 
-				if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 25){
-					pointsForClosed += 1
-				}else{
-					pointsForOpen += 1
-				}
+// Trigger photo take
+document.getElementById("snap").addEventListener("click", function() {
+  context.drawImage(video, 0, 0, 640, 480);
+  var dataURL = canvas.toDataURL();
+  baseFile = dataURL.slice(22)
 
-				if(pointsForOpen >= pointsForClosed){
-					console.log('Eyes are open')
-				}else{
-					console.log('Eyes are closed')
-				}
+  // console.log(baseFile);
 
-			};
+  // Image Recognition API
 
-		})
-	})
+      var b=JSON.stringify({"requests":[{  "image":{
+        "content":baseFile
+      }  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
+      
+      var e = new XMLHttpRequest;
 
-	// Voice Recognition API
+      e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
+      e.send(b)
 
-	// const uploadButton2 = document.querySelector('#upload2');
+        e.onload=function(){
+        const path = JSON.parse(e.responseText);
+        console.log(e.responseText)
+        const newPath = path.responses[0].faceAnnotations[0].landmarks;
 
-	// uploadButton2.addEventListener('click', () => {
-	// 		const input = document.querySelector('#audio');
-	// 		const fileName = input.files[0];
-	
-	// 		const fileReader = new FileReader();
-	// 		const audioFile = fileReader.readAsDataURL(fileName);
+        console.log(path)
 
-	// 		fileReader.addEventListener('load', (audioFile) => {
-	// 			baseFile = newfile.srcElement.result.slice(23);
-	// 			var b=JSON.stringify({"requests":[{  "image":{
-	// 				"content": baseFile
-	// 			}  ,  "features": [{"type":"FACE_DETECTION","maxResults":5}]    } ]});
-				
-	// 			var e=new XMLHttpRequest;
+        const LEFT_EYE_TOP_BOUNDARY = newPath[16].position;
+        const LEFT_EYE_BOTTOM_BOUNDARY = newPath[18].position;
+        const LEFT_EYE_PUPIL = newPath[20].position;
+        const RIGHT_EYE_TOP_BOUNDARY = newPath[21].position;
+        const RIGHT_EYE_BOTTOM_BOUNDARY = newPath[23].position;
+        const RIGHT_EYE_PUPIL = newPath[25].position;
+        const LEFT_EYEBROW_UPPER_MIDPOINT = newPath[26].position;
+        const RIGHT_EYEBROW_UPPER_MIDPOINT = newPath[27].position;
 
-	// 			e.onload=function(){console.log(e.responseText)};
-	// 			e.open("POST","https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAirYvq_dB6tcH1tM6TEQKTyNcEMid8bAs",!0);
-	// 			e.send(b)
+        let pointsForClosed = 0
+        let pointsForOpen = 0
 
-	// 		})
-	// 	})
+       // RIGHT EYE
 
-	
+        if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseInt(RIGHT_EYE_PUPIL.y)) <= 20){
+          // console.log(1)
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(RIGHT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(RIGHT_EYE_TOP_BOUNDARY.y)-parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y))){
+          //             console.log(2)
+
+          //   pointsForClosed += 1
+          // }else{
+          //             console.log(3)
+
+            pointsForOpen += 1
+          // }
+        }
+
+        if (Math.abs(parseInt(RIGHT_EYE_PUPIL.y) - parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 20){
+                    // console.log(4)
+
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(RIGHT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(RIGHT_EYE_TOP_BOUNDARY.y)-parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y))){
+          //   pointsForClosed += 1
+          //             console.log(5)
+
+          // }else{
+            pointsForOpen += 1
+                      // console.log(6)
+
+          // }
+        }
+
+        if (Math.abs(parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y)- parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) <= 25){
+                    // console.log(7)
+
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(RIGHT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(RIGHT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(RIGHT_EYE_TOP_BOUNDARY.y)-parseInt(RIGHT_EYE_BOTTOM_BOUNDARY.y))){
+          //   pointsForClosed += 1
+          //             console.log(8)
+
+          // }else{x
+            pointsForOpen += 1
+                      // console.log(9)
+
+          // }
+        }
+
+
+        // LEFT EYE
+
+        if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_PUPIL.y)) <= 20){
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(LEFT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(LEFT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(LEFT_EYE_TOP_BOUNDARY.y)-parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y))){
+          //   pointsForClosed += 1
+          // }else{
+            pointsForOpen += 1
+          // }
+        }
+
+        if (Math.abs(parseInt(LEFT_EYE_PUPIL.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 20){
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(LEFT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(LEFT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(LEFT_EYE_TOP_BOUNDARY.y)-parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y))){
+          //   pointsForClosed += 1
+          // }else{
+            pointsForOpen += 1
+          // }
+        }
+
+        if (Math.abs(parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseInt(LEFT_EYE_TOP_BOUNDARY.y)) <= 25){
+          pointsForClosed += 1
+        }else{
+          // if(Math.abs(parseInt(LEFT_EYEBROW_UPPER_MIDPOINT.y)-parseInt(LEFT_EYE_TOP_BOUNDARY.y)) >= Math.abs(parseInt(LEFT_EYE_TOP_BOUNDARY.y)-parseInt(LEFT_EYE_BOTTOM_BOUNDARY.y))){
+          //   pointsForClosed += 1
+          // }else{
+            pointsForOpen += 1
+          // }
+        }
+
+        if(pointsForOpen >= pointsForClosed){
+          console.log('Eyes are open')
+        }else{
+          console.log('Eyes are closed')
+        }
+
+      };
+
+    })
+
+
+
+
 </script>
-
-</body>
-</html>
