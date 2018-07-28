@@ -87,22 +87,25 @@ document.getElementById("snap").addEventListener("click", function() {
         // console.log("RIGHT_EYEBROW_UPPER_MIDPOINT", RIGHT_EYEBROW_UPPER_MIDPOINT.y)
 
 
-        if( (Math.abs(Math.abs(parseInt(fdPath1.x)) - Math.abs(parseInt(fdPath2.x))) < 200) & (Math.abs(Math.abs(parseInt(fdPath1.y)) - Math.abs(parseInt(fdPath3.y))) < 200 )){
+        if( (Math.abs(Math.abs(parseInt(fdPath1.x)) - Math.abs(parseInt(fdPath2.x))) < 200) & ( Math.abs(Math.abs(parseInt(fdPath1.y)) - Math.abs(parseInt(fdPath3.y))) < 200 )){
           
-          // console.log(Math.abs(Math.abs(parseInt(fdPath1.x)) - Math.abs(parseInt(fdPath2.x))))
-          // console.log(Math.abs(Math.abs(parseInt(fdPath1.y)) - Math.abs(parseInt(fdPath3.y))))
+          console.log(Math.abs(Math.abs(parseInt(fdPath1.x)) - Math.abs(parseInt(fdPath2.x))))
+          console.log(Math.abs(Math.abs(parseInt(fdPath1.y)) - Math.abs(parseInt(fdPath3.y))))
 
         if (
           ((Math.abs(parseFloat(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(RIGHT_EYE_PUPIL.y)) <= 6) & (Math.abs(parseFloat(RIGHT_EYE_PUPIL.y) - parseFloat(RIGHT_EYE_TOP_BOUNDARY.y)) <= 6))
           ||
           ((Math.abs(parseFloat(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(LEFT_EYE_PUPIL.y)) <= 6) & (Math.abs(parseFloat(LEFT_EYE_PUPIL.y) - parseFloat(LEFT_EYE_TOP_BOUNDARY.y)) <= 6)))
               {
-                // console.log(' 1left',Math.abs(parseFloat(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(RIGHT_EYE_PUPIL.y)), Math.abs(parseFloat(RIGHT_EYE_PUPIL.y) - parseFloat(RIGHT_EYE_TOP_BOUNDARY.y)))
-                // console.log('1right',Math.abs(parseFloat(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(LEFT_EYE_PUPIL.y)), Math.abs(parseFloat(LEFT_EYE_PUPIL.y) - parseFloat(LEFT_EYE_TOP_BOUNDARY.y)))
+                console.log(' 1left',Math.abs(parseFloat(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(RIGHT_EYE_PUPIL.y)), Math.abs(parseFloat(RIGHT_EYE_PUPIL.y) - parseFloat(RIGHT_EYE_TOP_BOUNDARY.y)))
+                console.log('1right',Math.abs(parseFloat(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(LEFT_EYE_PUPIL.y)), Math.abs(parseFloat(LEFT_EYE_PUPIL.y) - parseFloat(LEFT_EYE_TOP_BOUNDARY.y)))
                 pointsForClosed += 1
-              }else{
-                // console.log('2left',Math.abs(parseFloat(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(RIGHT_EYE_PUPIL.y)), Math.abs(parseFloat(RIGHT_EYE_PUPIL.y) - parseFloat(RIGHT_EYE_TOP_BOUNDARY.y)))
-                // console.log('2right',Math.abs(parseFloat(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(LEFT_EYE_PUPIL.y)), Math.abs(parseFloat(LEFT_EYE_PUPIL.y) - parseFloat(LEFT_EYE_TOP_BOUNDARY.y)))
+              }
+
+
+              else{
+                console.log('2left',Math.abs(parseFloat(RIGHT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(RIGHT_EYE_PUPIL.y)), Math.abs(parseFloat(RIGHT_EYE_PUPIL.y) - parseFloat(RIGHT_EYE_TOP_BOUNDARY.y)))
+                console.log('2right',Math.abs(parseFloat(LEFT_EYE_BOTTOM_BOUNDARY.y) - parseFloat(LEFT_EYE_PUPIL.y)), Math.abs(parseFloat(LEFT_EYE_PUPIL.y) - parseFloat(LEFT_EYE_TOP_BOUNDARY.y)))
                 pointsForOpen += 1
               }
 
